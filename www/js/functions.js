@@ -5,6 +5,7 @@
 $( document ).ready(function() {
     console.log("- Se inicia el documento");
     init();
+    lastresponse = "";
 });
 
 
@@ -34,9 +35,9 @@ function listenhash(){
            console.log(hashtosend);
 
               
-            var time = setInterval(myTimer, 5000);
+            var time = setInterval(myTimer, 3000);
             var requesturl = "http://gabrielabdala.com/tw/index.php?tw="+hashtosend; 
-
+            var i = 0;
             function myTimer() {       
                 $.ajax(
                     {
@@ -49,13 +50,35 @@ function listenhash(){
                      
                       success: function(res){
 
-                   
+                           $(".twit").text(res);
                          console.log( "- Exito Ajax Carga: "+res );
-                         $(".twit").text(res);
-                         lihgts();
+                         
+                         if(i == 0)
+                         {
+                          lastresponse = res;
+                          lihgts();
+                         }
+                         else{
+
+                            if(lastresponse == res){
+                              console.log("igual");
+                            }else{
+                              console.log("cambio");
+                              lastresponse = res;
+                              lihgts();
+
+                            }
+
+                         }
+
+                        
+
+                         
+                         
                                     
                         }
                      });
+                i++;
                 };
         });
 }
@@ -79,7 +102,7 @@ function lihgts()
           // switch off after 3 seconds 
           setTimeout(function() {
             window.plugins.flashlight.switchOff(); // success/error callbacks may be passed 
-          }, 1000);
+          }, 500);
        
         } else {
           $(".openflash").text("sorry-not");
