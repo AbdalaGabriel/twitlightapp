@@ -16,21 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-/*var app = {
+ var app = {
     // Application Constructor
     initialize: function() {
-        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+        this.bindEvents();
     },
 
-    // deviceready Event Handler
-    //
-    // Bind any cordova events here. Common events are:
-    // 'pause', 'resume', etc.
+    bindEvents: function() {
+        document.addEventListener('deviceready', this.onDeviceReady, false);
+    },
+    
     onDeviceReady: function() {
-        this.receivedEvent('deviceready');
+        app.receivedEvent('deviceready');
+        init(); 
+
+        console.log("- Device reaadt");
+        var notificationOpenedCallback = function(jsonData) {
+            console.log('notificationOpenedCallback: ' + JSON.stringify(jsonData));
+        };
+
+        window.plugins.OneSignal
+        .startInit("bb8bcd07-9dfd-48b7-a742-e8a01cfeeefd")
+        .handleNotificationOpened(notificationOpenedCallback)
+        .endInit();
+
     },
 
-    // Update DOM on a Received Event
     receivedEvent: function(id) {
         var parentElement = document.getElementById(id);
         var listeningElement = parentElement.querySelector('.listening');
@@ -40,36 +51,44 @@
         receivedElement.setAttribute('style', 'display:block;');
 
         console.log('Received Event: ' + id);
-        lights();
     }
 };
 
-app.initialize();
 
-function lihgts()
+function init()
 {
-$(".openflash").click(function()
+    console.log("- Function init");
+    let sendNot = $(".sendNoti");
+    sendNot.click(function()
     {
-        window.plugins.flashlight.available(function(isAvailable) {
-  if (isAvailable) {
- 
-    // switch on 
-    window.plugins.flashlight.switchOn(
-      function() {}, // optional success callback 
-      function() {}, // optional error callback 
-      {intensity: 0.3} // optional as well 
-    );
- 
-    // switch off after 3 seconds 
-    setTimeout(function() {
-      window.plugins.flashlight.switchOff(); // success/error callbacks may be passed 
-    }, 3000);
- 
-  } else {
-    alert("Flashlight not available on this device");
-  }
-});
+        console.log("- Clik on send");
+        send();
     });
-}*/
 
-console.log("int");
+}
+
+
+function send()
+{
+    console.log("- Init send");
+    window.plugins.OneSignal.getIds(function(ids) {
+        
+        var notificationObj = { contents: {en: "message body"},
+        include_player_ids: [ids.userId]};
+        window.plugins.OneSignal.postNotification(notificationObj,
+        
+        function(successResponse) 
+        {
+          console.log("Notification Post Success:", successResponse);
+        },
+        
+        function (failedResponse)
+        {
+          console.log("Notification Post Failed: ", failedResponse);
+          alert("Notification Post Failed:\n" + JSON.stringify(failedResponse));
+        }
+      );
+  });
+}
+
+
