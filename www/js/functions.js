@@ -52,7 +52,7 @@ function listenhash(){
                    
                          console.log( "- Exito Ajax Carga: "+res );
                          $(".twit").text(res);
-                         //lihgts();
+                         lihgts();
                                     
                         }
                      });
